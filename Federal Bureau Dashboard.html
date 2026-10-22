@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المكتب الفدرالي - المنظومة الاستخباراتية المشفرة</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tactical: {
+                            bg: '#07090e',
+                            card: '#111723',
+                            border: '#1e293b',
+                            accent: '#f59e0b',
+                            fbi: '#3b82f6',
+                            cia: '#10b981',
+                            iaa: '#a855f7'
+                        }
+                    },
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #07090e;
+            color: #f1f5f9;
+            overflow-x: hidden;
+        }
+        /* English Numbers Enforcement */
+        .en-num, input, select, textarea, button, td, th, span, div {
+            font-variant-numeric: english-like tabular-nums;
+            font-feature-settings: "tnum";
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #f59e0b;
+        }
+        .glass-panel {
+            background: rgba(17, 23, 35, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        @keyframes pulse-gold {
+            0%, 100% { border-color: rgba(245, 158, 11, 0.4); box-shadow: 0 0 10px rgba(245, 158, 11, 0.1); }
+            50% { border-color: rgba(245, 158, 11, 1); box-shadow: 0 0 20px rgba(245, 158, 11, 0.3); }
+        }
+        .pulse-gold {
+            animation: pulse-gold 2s infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-black">
+
+    <!-- LOGIN OVERLAY -->
+    <div id="loginOverlay" class="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-md p-4">
+        <div class="glass-panel p-8 rounded-2xl w-full max-w-md border border-amber-500/30 shadow-2xl relative overflow-hidden">
+            <div class="absolute -top-12 -left-12 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl"></div>
+            <div class="absolute -bottom-12 -right-12 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl"></div>
+
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-amber-500/10 border border-amber-500/30 mb-4 text-amber-500 text-3xl">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h1 class="text-2xl font-black tracking-wide text-white">المكتب الفدرالي</h1>
+                <p class="text-xs text-gray-400 mt-1">بوابة الدخول المشفرة للقطاعات الأمنية الاستخباراتية</p>
+            </div>
+
+            <form onsubmit="handleLogin(event)" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-2">رمز الولوج السري:</label>
+                    <div class="relative">
+                        <input type="password" id="passcodeInput" required
+                            class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-center text-lg tracking-widest text-amber-400 font-bold focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                            placeholder="••••••••" autocomplete="off">
+                        <i class="fa-solid fa-key absolute left-4 top-4 text-gray-500"></i>
+                    </div>
+                </div>
+
+                <div id="loginError" class="text-rose-500 text-xs text-center hidden font-bold">
+                    <i class="fa-solid fa-circle-exclamation ml-1"></i> الكود السري غير صحيح!
+                </div>
+
+                <button type="submit" 
+                    class="w-full py-3 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-slate-950 font-bold rounded-xl shadow-lg hover:shadow-amber-500/20 transition duration-200">
+                    <i class="fa-solid fa-right-to-bracket ml-2"></i> دخول النظام
+                </button>
+            </form>
+
+            <div class="mt-8 text-center text-[10px] text-gray-500 uppercase tracking-widest border-t border-slate-800/80 pt-3">
+                CLASSIFIED DNI SYSTEM - AUTHORIZED PERSONNEL ONLY
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP DASHBOARD -->
+    <div id="mainDashboard" class="hidden min-h-screen flex flex-col">
+        
+        <!-- TOP HEADER NAVBAR -->
+        <header class="glass-panel border-b border-slate-800 sticky top-0 z-40 px-4 lg:px-8 py-3">
+            <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+                
+                <!-- Logo & Bureau Name -->
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-slate-950 text-2xl shadow-lg shadow-amber-500/20 font-black">
+                        <i class="fa-solid fa-building-shield"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="font-black text-lg text-white leading-none">المكتب الفدرالي</h1>
+                            <span id="topSystemRoleBadge" class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/40 px-2 py-0.5 rounded font-bold">DNI OVERSEER</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-0.5">المنظومة الاستخباراتية الموحدة</p>
+                    </div>
+                </div>
+
+                <!-- Active Profile Info Badge -->
+                <div class="flex items-center gap-4">
+                    <div id="userProfileBadge" class="flex items-center gap-3 bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-2">
+                        <div id="userIconContainer" class="w-9 h-9 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-lg">
+                            <i class="fa-solid fa-user-gear"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs text-gray-400">الحساب النشط:</div>
+                            <div id="userNameDisplay" class="text-sm font-bold text-amber-400">Agent 0</div>
+                        </div>
+                        <span id="userRoleBadge" class="mr-2 text-[11px] bg-amber-500 text-slate-950 font-bold px-2.5 py-0.5 rounded-full">
+                            مدير المكتب الفدرالي
+                        </span>
+                    </div>
+
+                    <button onclick="logout()" class="p-2.5 bg-slate-900 hover:bg-rose-500/20 text-gray-400 hover:text-rose-400 border border-slate-800 hover:border-rose-500/30 rounded-xl transition" title="تسجيل الخروج">
+                        <i class="fa-solid fa-power-off text-base"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- SUB-SECTORS SUMMARY TICKER (Visible to Agent 0 or tailored to individual Sector) -->
+        <div id="sectorsHeaderBar" class="bg-slate-950 border-b border-slate-800/80 px-4 lg:px-8 py-2">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                <!-- FBI -->
+                <div id="fbiHeaderBox" class="flex items-center justify-between bg-blue-950/20 border border-blue-500/20 px-3 py-1.5 rounded-lg">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                        <span class="font-bold text-blue-400">FBI (مكتب التحقيقات):</span>
+                    </div>
+                    <span id="fbiLeaderDisplay" class="text-gray-300">المسؤول: <span class="text-white font-semibold">غير محدد</span></span>
+                </div>
+                <!-- CIA -->
+                <div id="ciaHeaderBox" class="flex items-center justify-between bg-emerald-950/20 border border-emerald-500/20 px-3 py-1.5 rounded-lg">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span class="font-bold text-emerald-400">CIA (الاستخبارات المركزية):</span>
+                    </div>
+                    <span id="ciaLeaderDisplay" class="text-gray-300">المسؤول: <span class="text-white font-semibold">غير محدد</span></span>
+                </div>
+                <!-- IAA (العمليات السرية) -->
+                <div id="iaaHeaderBox" class="flex items-center justify-between bg-purple-950/20 border border-purple-500/20 px-3 py-1.5 rounded-lg">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
+                        <span class="font-bold text-purple-400">IAA (العمليات السرية):</span>
+                    </div>
+                    <span id="iaaLeaderDisplay" class="text-gray-300">المسؤول: <span class="text-white font-semibold">غير محدد</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAVIGATION TABS -->
+        <div class="bg-slate-900/60 border-b border-slate-800 px-4 lg:px-8 sticky top-[73px] z-30 backdrop-blur-md">
+            <div class="max-w-7xl mx-auto flex overflow-x-auto no-scrollbar gap-2 py-2">
+                <button onclick="switchTab('tasks')" id="tabBtn-tasks" class="tab-btn active px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 whitespace-nowrap transition">
+                    <i class="fa-solid fa-list-check"></i> لوحة المهام والتكاليف
+                </button>
+                <button onclick="switchTab('org')" id="tabBtn-org" class="tab-btn px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 whitespace-nowrap transition">
+                    <i class="fa-solid fa-sitemap"></i> الهيكلية والأعضاء
+                </button>
+                <button onclick="switchTab('treasury')" id="tabBtn-treasury" class="tab-btn px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 whitespace-nowrap transition">
+                    <i class="fa-solid fa-vault"></i> الخزينة والأجهزة الاستخباراتية
+                </button>
+                <button onclick="switchTab('reports')" id="tabBtn-reports" class="tab-btn px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 whitespace-nowrap transition">
+                    <i class="fa-solid fa-file-contract"></i> التقارير الميدانية
+                </button>
+                <button onclick="switchTab('messages')" id="tabBtn-messages" class="tab-btn px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 whitespace-nowrap transition relative">
+                    <i class="fa-solid fa-comments"></i> الرسائل المشفرة
+                </button>
+            </div>
+        </div>
+
+        <!-- TAB CONTENTS -->
+        <main class="max-w-7xl mx-auto w-full p-4 lg:p-8 flex-grow">
+
+            <!-- TAB 1: TASKS & DIRECTIVES -->
+            <section id="tab-tasks" class="tab-content space-y-6">
+                <!-- Agent 0 Create Task Panel -->
+                <div id="agent0TaskCreator" class="glass-panel p-6 rounded-2xl border border-amber-500/30 relative">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-circle-plus text-amber-500 text-xl"></i>
+                            <h2 class="text-lg font-black text-white">إصدار تكليف استخباراتي جديد (صلاحية Agent 0)</h2>
+                        </div>
+                        <span class="text-xs bg-amber-500/10 text-amber-400 px-3 py-1 rounded-full font-bold border border-amber-500/20">خاص بالقيادة العليا</span>
+                    </div>
+
+                    <form onsubmit="handleCreateTask(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="lg:col-span-2">
+                            <label class="block text-xs text-gray-400 mb-1">عنوان المهمة التكليفية:</label>
+                            <input type="text" id="taskTitle" required placeholder="مثال: مراقبة التحركات المشبوهة في الشمال"
+                                class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">القطاع المستهدف:</label>
+                            <select id="taskTargetSector" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+                                <option value="ALL">جميع القطاعات (عام)</option>
+                                <option value="FBI">FBI - مكتب التحقيقات</option>
+                                <option value="CIA">CIA - الاستخبارات المركزية</option>
+                                <option value="IAA">IAA - العمليات السرية</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">المكافأة المالية ($):</label>
+                            <input type="number" id="taskReward" required min="1000" step="1000" value="50000"
+                                class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-amber-400 font-bold focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div class="lg:col-span-3">
+                            <label class="block text-xs text-gray-400 mb-1">تفاصيل ومجريات التكليف:</label>
+                            <textarea id="taskDesc" required rows="2" placeholder="اكتب تفاصيل التكليف، الأهداف المطلوب تحقيقها، وأي شروط إضافية..."
+                                class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-amber-500"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">المكافآت الاستثنائية:</label>
+                            <input type="text" id="taskBonus" placeholder="مثال: معدات استخباراتية إضافية"
+                                class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+                            <button type="submit" class="w-full mt-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-sm transition">
+                                <i class="fa-solid fa-paper-plane ml-1"></i> إرسال التكليف
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Active Tasks List -->
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-md font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-tasks text-amber-500"></i> قائمة التكاليف الميدانية الموجهة
+                        </h3>
+                        <div id="taskFilterButtons" class="flex gap-2">
+                            <button onclick="filterTasks('ALL')" class="text-xs px-3 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-gray-300">الكل</button>
+                            <button onclick="filterTasks('FBI')" class="text-xs px-3 py-1 bg-blue-900/40 hover:bg-blue-900/60 rounded-lg text-blue-300 border border-blue-500/30">FBI</button>
+                            <button onclick="filterTasks('CIA')" class="text-xs px-3 py-1 bg-emerald-900/40 hover:bg-emerald-900/60 rounded-lg text-emerald-300 border border-emerald-500/30">CIA</button>
+                            <button onclick="filterTasks('IAA')" class="text-xs px-3 py-1 bg-purple-900/40 hover:bg-purple-900/60 rounded-lg text-purple-300 border border-purple-500/30">IAA</button>
+                        </div>
+                    </div>
+
+                    <div id="tasksFeedList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Dynamic Tasks -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: ORG STRUCTURE & MEMBERS -->
+            <section id="tab-org" class="tab-content hidden space-y-6">
+                <!-- Assign Leaders Section (Agent 0 Exclusive) -->
+                <div id="agent0LeaderAssign" class="glass-panel p-6 rounded-2xl border border-amber-500/30">
+                    <h3 class="text-md font-bold text-white mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-user-shield text-amber-500"></i> تعيين رؤوساء القطاعات (خاص بـ Agent 0)
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-slate-950 p-4 rounded-xl border border-blue-500/30">
+                            <div class="text-xs font-bold text-blue-400 mb-2">مسؤول قطاع FBI</div>
+                            <div class="flex gap-2">
+                                <input type="text" id="fbiLeaderInput" placeholder="اسم المسؤول..." class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2 py-1 text-xs text-white">
+                                <button onclick="assignLeader('FBI')" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-1 rounded-lg font-bold">حفظ</button>
+                            </div>
+                        </div>
+                        <div class="bg-slate-950 p-4 rounded-xl border border-emerald-500/30">
+                            <div class="text-xs font-bold text-emerald-400 mb-2">مسؤول قطاع CIA</div>
+                            <div class="flex gap-2">
+                                <input type="text" id="ciaLeaderInput" placeholder="اسم المسؤول..." class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2 py-1 text-xs text-white">
+                                <button onclick="assignLeader('CIA')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3 py-1 rounded-lg font-bold">حفظ</button>
+                            </div>
+                        </div>
+                        <div class="bg-slate-950 p-4 rounded-xl border border-purple-500/30">
+                            <div class="text-xs font-bold text-purple-400 mb-2">مسؤول قطاع IAA (العمليات السرية)</div>
+                            <div class="flex gap-2">
+                                <input type="text" id="iaaLeaderInput" placeholder="اسم المسؤول..." class="w-full bg-slate-900 border border-slate-800 rounded-lg px-2 py-1 text-xs text-white">
+                                <button onclick="assignLeader('IAA')" class="bg-purple-600 hover:bg-purple-500 text-white text-xs px-3 py-1 rounded-lg font-bold">حفظ</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add New Agent Form -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800">
+                    <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-user-plus text-amber-500"></i> إضافة أعضاء جديد للقطاع
+                    </h3>
+                    <form onsubmit="handleAddMember(event)" class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                        <input type="text" id="newAgentName" required placeholder="اسم العميل / الكود" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
+                        <input type="text" id="newAgentRank" required placeholder="الرتبة / المسمى الوظيفي" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
+                        <select id="newAgentSector" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
+                            <option value="FBI">FBI - مكتب التحقيقات</option>
+                            <option value="CIA">CIA - الاستخبارات المركزية</option>
+                            <option value="IAA">IAA - العمليات السرية</option>
+                        </select>
+                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2 rounded-xl transition">
+                            <i class="fa-solid fa-plus ml-1"></i> تسجيل العميل
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Sector Org Cards (Filtered by user authorization) -->
+                <div id="membersOrgGrid" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div id="fbiOrgCard" class="glass-panel rounded-2xl p-5 border border-blue-500/20">
+                        <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
+                            <h4 class="font-bold text-blue-400 flex items-center gap-2">
+                                <i class="fa-solid fa-building text-blue-500"></i> مكتب التحقيقات FBI
+                            </h4>
+                            <span id="fbiCount" class="text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded font-mono">0</span>
+                        </div>
+                        <div id="fbiMemberList" class="space-y-2"></div>
+                    </div>
+
+                    <div id="ciaOrgCard" class="glass-panel rounded-2xl p-5 border border-emerald-500/20">
+                        <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
+                            <h4 class="font-bold text-emerald-400 flex items-center gap-2">
+                                <i class="fa-solid fa-eye text-emerald-500"></i> الاستخبارات المركزية CIA
+                            </h4>
+                            <span id="ciaCount" class="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-mono">0</span>
+                        </div>
+                        <div id="ciaMemberList" class="space-y-2"></div>
+                    </div>
+
+                    <div id="iaaOrgCard" class="glass-panel rounded-2xl p-5 border border-purple-500/20">
+                        <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
+                            <h4 class="font-bold text-purple-400 flex items-center gap-2">
+                                <i class="fa-solid fa-user-ninja text-purple-500"></i> IAA (العمليات السرية)
+                            </h4>
+                            <span id="iaaCount" class="text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded font-mono">0</span>
+                        </div>
+                        <div id="iaaMemberList" class="space-y-2"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: TREASURY & MYSTERY EQUIPMENT -->
+            <section id="tab-treasury" class="tab-content hidden space-y-6">
+                <!-- Budgets Display (Isolated per sector or all for Agent 0) -->
+                <div id="treasuryCardsContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div id="fbiBudgetCard" class="glass-panel p-5 rounded-2xl border border-blue-500/30 flex items-center justify-between">
+                        <div>
+                            <div class="text-xs text-gray-400 mb-1">ميزانية قطاع FBI</div>
+                            <div id="fbiBudget" class="text-2xl font-black text-blue-400 font-mono">$100,000</div>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                    </div>
+                    <div id="ciaBudgetCard" class="glass-panel p-5 rounded-2xl border border-emerald-500/30 flex items-center justify-between">
+                        <div>
+                            <div class="text-xs text-gray-400 mb-1">ميزانية قطاع CIA</div>
+                            <div id="ciaBudget" class="text-2xl font-black text-emerald-400 font-mono">$100,000</div>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                    </div>
+                    <div id="iaaBudgetCard" class="glass-panel p-5 rounded-2xl border border-purple-500/30 flex items-center justify-between">
+                        <div>
+                            <div class="text-xs text-gray-400 mb-1">ميزانية IAA (العمليات السرية)</div>
+                            <div id="iaaBudget" class="text-2xl font-black text-purple-400 font-mono">$100,000</div>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agent 0 View Switcher (Only visible for Agent 0) -->
+                <div id="agent0SectorFundSelector" class="glass-panel p-4 rounded-xl flex flex-wrap items-center justify-between border border-slate-800 gap-3">
+                    <div class="text-xs text-gray-300 flex items-center gap-2">
+                        <i class="fa-solid fa-boxes-stacked text-amber-500"></i>
+                        <span>معاينة تقدم مربعات الأجهزة الخاصة بالقطاع:</span>
+                    </div>
+                    <select id="activeFundingSector" onchange="renderMysteryBoxes()" class="bg-slate-950 border border-slate-700 text-amber-400 font-bold text-xs rounded-lg px-3 py-1.5 focus:outline-none">
+                        <option value="FBI">FBI - مكتب التحقيقات</option>
+                        <option value="CIA">CIA - الاستخبارات المركزية</option>
+                        <option value="IAA">IAA - العمليات السرية</option>
+                    </select>
+                </div>
+
+                <!-- 10 Mystery Crate Grid -->
+                <div>
+                    <div class="mb-4">
+                        <h3 class="text-md font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-shield-cat text-amber-500"></i> قائمة الأجهزة الاستخباراتية المشفرة (10 مربعات)
+                        </h3>
+                        <p class="text-xs text-gray-400 mt-1">المربعات مغلقة بالكامل (0/10). يتم فتح المربعات بالتتابع عبر رصيد ميزانية القطاع.</p>
+                    </div>
+
+                    <div id="mysteryBoxesGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                        <!-- 10 Boxes dynamically populated -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: MISSION REPORTS -->
+            <section id="tab-reports" class="tab-content hidden space-y-6">
+                <!-- Sector Report Form (Hidden for Agent 0) -->
+                <div id="sectorReportForm" class="glass-panel p-6 rounded-2xl border border-slate-800">
+                    <h3 class="text-md font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-file-pen text-amber-500"></i> رفع تقرير ميداني جديد إلى المكتب الفدرالي
+                    </h3>
+                    <form onsubmit="handleSubmitReport(event)" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1">اسم/عنوان المهمة التكليفية:</label>
+                                <input type="text" id="reportTaskTitle" required placeholder="مثال: تقرير المتابعة الاستخباراتية"
+                                    class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1">القطاع المرفع للتقرير:</label>
+                                <input type="text" id="reportSectorDisplay" readonly class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-amber-400 font-bold">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">تفاصيل التتقرير الميداني والأدلة:</label>
+                            <textarea id="reportContent" required rows="3" placeholder="اكتب التفاصيل الكاملة والأدلة والتوصيات الميدانية..."
+                                class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-amber-500"></textarea>
+                        </div>
+
+                        <div class="text-left">
+                            <button type="submit" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-xs transition">
+                                <i class="fa-solid fa-paper-plane ml-1"></i> إرسال التقرير لـ Agent 0
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Agent 0 Reports Notice Banner -->
+                <div id="agent0ReportsBanner" class="hidden glass-panel p-4 rounded-xl border border-amber-500/30 text-xs text-amber-400 flex items-center gap-3">
+                    <i class="fa-solid fa-eye text-lg"></i>
+                    <span>وضع القيادة العليا (Agent 0): استعراض والتحقق من التقارير الواردة من كافة القطاعات.</span>
+                </div>
+
+                <!-- Reports Review Feed -->
+                <div>
+                    <h3 class="text-md font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-folder-open text-amber-500"></i> التقارير الميدانية المرفوعة
+                    </h3>
+                    <div id="reportsList" class="space-y-3">
+                        <!-- Dynamic Reports -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: ENCRYPTED MESSAGING SYSTEM -->
+            <section id="tab-messages" class="tab-content hidden space-y-6">
+                <div class="glass-panel rounded-2xl border border-slate-800 h-[650px] flex flex-col overflow-hidden">
+                    
+                    <div class="p-4 bg-slate-950 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></div>
+                            <div>
+                                <h3 class="font-bold text-white text-sm">منظومة المراسلات التكتيكية المشفرة</h3>
+                                <p class="text-[10px] text-gray-400">تشفير عالي الأمان لتبادل البرقيات والاستخبارات</p>
+                            </div>
+                        </div>
+
+                        <!-- Message Type Filter / Target -->
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-gray-400">نوع الرسالة / الوجهة:</span>
+                            <select id="chatMessageTypeSelect" class="bg-slate-900 border border-slate-700 text-amber-400 font-bold text-xs rounded-lg px-3 py-1.5 focus:outline-none">
+                                <option value="BROADCAST">1. رسالة عامة إلى جميع القطاعات</option>
+                                <option value="DIRECT_FBI">2. برقية موجهة إلى قطاع FBI</option>
+                                <option value="DIRECT_CIA">2. برقية موجهة إلى قطاع CIA</option>
+                                <option value="DIRECT_IAA">2. برقية موجهة إلى قطاع IAA (العمليات السرية)</option>
+                                <option value="FED_DIRECT">3. برقية حصرية إلى المكتب الفدرالي (Agent 0)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Chat Messages Display Stream -->
+                    <div id="chatMessagesContainer" class="flex-grow p-4 overflow-y-auto space-y-3 bg-slate-950/60">
+                        <!-- Dynamic Chat Messages -->
+                    </div>
+
+                    <form onsubmit="handleSendMessage(event)" class="p-3 bg-slate-950 border-t border-slate-800 flex gap-2">
+                        <input type="text" id="chatInput" required placeholder="اكتب برقيتك المشفرة هنا..."
+                            class="flex-grow bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
+                        <button type="submit" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-xs transition flex items-center gap-1">
+                            <span>إرسال</span>
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="bg-slate-950 border-t border-slate-800/80 py-4 text-center text-xs text-gray-500">
+            <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-2">
+                <div>نظام المكتب الفدرالي - سيرفر الحياة الواقعية</div>
+                <div class="font-mono text-[10px] text-gray-600">DNI ISOLATED NETWORK v5.0 | HIGHLY CLASSIFIED</div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- JAVASCRIPT SYSTEM LOGIC -->
+    <script>
+        // System State & User
+        let currentUser = null; 
+        let currentTab = 'tasks';
+
+        // Format English Numbers (e.g. 100,000)
+        function formatNum(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // 10 High Cost Mystery Equipment Items
+        const mysteryBoxesData = [
+            { id: 1, name: 'جهاز تنصت عالي التردد', cost: 15000, icon: 'fa-microphone-lines', desc: 'التقاط المحادثات الحية والمكالمات القريبة.' },
+            { id: 2, name: 'شريحة تتبع GPS التكتيكية', cost: 25000, icon: 'fa-location-crosshairs', desc: 'زرع شرائح تتبع في المركبات المشبوهة.' },
+            { id: 3, name: 'طائرة استطلاع DNI-Drone', cost: 40000, icon: 'fa-drone', desc: 'استطلاع جوي وتصوير الأهداف الميدانية.' },
+            { id: 4, name: 'منظومة التشويش الراداري', cost: 60000, icon: 'fa-satellite-dish', desc: 'تعطيل الاتشارات اللاسلكية والرادارات المحلية.' },
+            { id: 5, name: 'المنظار الحراري الاستخباراتي', cost: 90000, icon: 'fa-glasses', desc: 'رؤية كاشفة للتحركات خلف السواتر والمباني.' },
+            { id: 6, name: 'برمجية الاختراق الأمني', cost: 125000, icon: 'fa-laptop-code', desc: 'اختراق كاميرات المراقبة والأنظمة المغلقة.' },
+            { id: 7, name: 'كاشف الذبذبات التكتيكي', cost: 170000, icon: 'fa-tower-cell', desc: 'كشف أجهزة التنصت والتتبع المزروعة.' },
+            { id: 8, name: 'مركبة العمليات المصفحة', cost: 220000, icon: 'fa-car-side', desc: 'مركبة سوداء ثقيلة ومصفحة مضادة للرصاص.' },
+            { id: 9, name: 'نظام المطابقة الصوتية الفدرالي', cost: 300000, icon: 'fa-wave-square', desc: 'تحليل البصمات الصوتية ومطابقتها بالسجلات.' },
+            { id: 10, name: 'مفتاح الربط بالقمر الصناعي', cost: 400000, icon: 'fa-satellite', desc: 'وصول مباشر لكاميرات الأقمار الصناعية والمسح الحراري.' }
+        ];
+
+        // Global State (Initial: Budgets = $100,000, Unlocked = 0/10)
+        let appState = {
+            tasks: [
+                { id: 101, title: 'مراقبة تحركات المرفأ البحري', target: 'FBI', reward: 50000, bonus: 'معدات أمنية', desc: 'يرجى رصد المستودعات بدون إثارة الانتباه.', status: 'نشط', createdBy: 'Agent 0', date: '2026-10-22' },
+                { id: 102, title: 'تحري الترددات اللاسلكية', target: 'CIA', reward: 75000, bonus: 'ترقية أمان', desc: 'فحص الترددات المشبوهة في الأطراف الشمالية.', status: 'نشط', createdBy: 'Agent 0', date: '2026-10-22' },
+                { id: 103, title: 'عملية خاطفة سريجة للغاية', target: 'IAA', reward: 90000, bonus: 'تصريح خاص', desc: 'متابعة الأهداف وتأمين المستندات.', status: 'نشط', createdBy: 'Agent 0', date: '2026-10-22' }
+            ],
+            leaders: {
+                FBI: 'غير محدد',
+                CIA: 'غير محدد',
+                IAA: 'غير محدد'
+            },
+            members: [],
+            budgets: {
+                FBI: 100000,
+                CIA: 100000,
+                IAA: 100000
+            },
+            unlockedBoxes: {
+                FBI: [],
+                CIA: [],
+                IAA: []
+            },
+            reports: [],
+            messages: [
+                { id: 1, type: 'BROADCAST', senderSector: 'FED', senderName: 'Agent 0', text: 'أهلاً بكم في منظومة الاتصالات الاستخباراتية الموحدة.', time: '12:00' }
+            ]
+        };
+
+        function loadSavedState() {
+            const saved = localStorage.getItem('dni_fed_bureau_data_v3');
+            if (saved) {
+                try {
+                    appState = JSON.parse(saved);
+                } catch(e) { console.error(e); }
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('dni_fed_bureau_data_v3', JSON.stringify(appState));
+        }
+
+        // Login Handler
+        function handleLogin(e) {
+            e.preventDefault();
+            const code = document.getElementById('passcodeInput').value.trim();
+            const errorEl = document.getElementById('loginError');
+
+            if (code === 'Agent 0') {
+                currentUser = { name: 'Agent 0', role: 'AGENT_0', sector: 'FED' };
+            } else if (code === 'FBI') {
+                currentUser = { name: 'مسؤول FBI', role: 'SECTOR_LEADER', sector: 'FBI' };
+            } else if (code === 'CIA') {
+                currentUser = { name: 'مسؤول CIA', role: 'SECTOR_LEADER', sector: 'CIA' };
+            } else if (code === 'IAA') {
+                currentUser = { name: 'مسؤول IAA (العمليات السرية)', role: 'SECTOR_LEADER', sector: 'IAA' };
+            } else {
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            errorEl.classList.add('hidden');
+            document.getElementById('loginOverlay').classList.add('hidden');
+            document.getElementById('mainDashboard').classList.remove('hidden');
+
+            setupUserUI();
+            renderAll();
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('mainDashboard').classList.add('hidden');
+            document.getElementById('loginOverlay').classList.remove('hidden');
+            document.getElementById('passcodeInput').value = '';
+        }
+
+        function setupUserUI() {
+            const userNameDisplay = document.getElementById('userNameDisplay');
+            const userRoleBadge = document.getElementById('userRoleBadge');
+            const topSystemRoleBadge = document.getElementById('topSystemRoleBadge');
+            
+            const agent0TaskCreator = document.getElementById('agent0TaskCreator');
+            const agent0LeaderAssign = document.getElementById('agent0LeaderAssign');
+            const sectorReportForm = document.getElementById('sectorReportForm');
+            const agent0ReportsBanner = document.getElementById('agent0ReportsBanner');
+            const reportSectorDisplay = document.getElementById('reportSectorDisplay');
+            
+            const taskFilterButtons = document.getElementById('taskFilterButtons');
+            const agent0SectorFundSelector = document.getElementById('agent0SectorFundSelector');
+
+            userNameDisplay.innerText = currentUser.name;
+
+            if (currentUser.role === 'AGENT_0') {
+                userRoleBadge.innerText = 'مدير المكتب الفدرالي (Agent 0)';
+                userRoleBadge.className = 'mr-2 text-[11px] bg-amber-500 text-slate-950 font-bold px-2.5 py-0.5 rounded-full';
+                topSystemRoleBadge.innerText = 'DNI OVERSEER';
+                
+                agent0TaskCreator.classList.remove('hidden');
+                agent0LeaderAssign.classList.remove('hidden');
+                taskFilterButtons.classList.remove('hidden');
+                agent0SectorFundSelector.classList.remove('hidden');
+                
+                // Agent 0 sees all org cards
+                document.getElementById('fbiOrgCard').classList.remove('hidden');
+                document.getElementById('ciaOrgCard').classList.remove('hidden');
+                document.getElementById('iaaOrgCard').classList.remove('hidden');
+
+                // Agent 0 sees all budget cards
+                document.getElementById('fbiBudgetCard').classList.remove('hidden');
+                document.getElementById('ciaBudgetCard').classList.remove('hidden');
+                document.getElementById('iaaBudgetCard').classList.remove('hidden');
+
+                // Hide Create Report for Agent 0
+                sectorReportForm.classList.add('hidden');
+                agent0ReportsBanner.classList.remove('hidden');
+
+                // Show all sectors header
+                document.getElementById('fbiHeaderBox').classList.remove('hidden');
+                document.getElementById('ciaHeaderBox').classList.remove('hidden');
+                document.getElementById('iaaHeaderBox').classList.remove('hidden');
+
+            } else {
+                const secName = currentUser.sector === 'IAA' ? 'IAA (العمليات السرية)' : currentUser.sector;
+                userRoleBadge.innerText = `مسؤول قطاع ${secName}`;
+                userRoleBadge.className = 'mr-2 text-[11px] bg-cyan-500 text-slate-950 font-bold px-2.5 py-0.5 rounded-full';
+                topSystemRoleBadge.innerText = `SECTOR COMMAND - ${currentUser.sector}`;
+                
+                agent0TaskCreator.classList.add('hidden');
+                agent0LeaderAssign.classList.add('hidden');
+                taskFilterButtons.classList.add('hidden');
+                agent0SectorFundSelector.classList.add('hidden');
+                
+                // Show Create Report for Sub-Sectors
+                sectorReportForm.classList.remove('hidden');
+                agent0ReportsBanner.classList.add('hidden');
+                reportSectorDisplay.value = secName;
+
+                // ISOLATION: Hide other sectors' Org Cards & Budget Cards
+                document.getElementById('fbiOrgCard').classList.toggle('hidden', currentUser.sector !== 'FBI');
+                document.getElementById('ciaOrgCard').classList.toggle('hidden', currentUser.sector !== 'CIA');
+                document.getElementById('iaaOrgCard').classList.toggle('hidden', currentUser.sector !== 'IAA');
+
+                document.getElementById('fbiBudgetCard').classList.toggle('hidden', currentUser.sector !== 'FBI');
+                document.getElementById('ciaBudgetCard').classList.toggle('hidden', currentUser.sector !== 'CIA');
+                document.getElementById('iaaBudgetCard').classList.toggle('hidden', currentUser.sector !== 'IAA');
+
+                document.getElementById('fbiHeaderBox').classList.toggle('hidden', currentUser.sector !== 'FBI');
+                document.getElementById('ciaHeaderBox').classList.toggle('hidden', currentUser.sector !== 'CIA');
+                document.getElementById('iaaHeaderBox').classList.toggle('hidden', currentUser.sector !== 'IAA');
+
+                document.getElementById('activeFundingSector').value = currentUser.sector;
+            }
+
+            document.getElementById('fbiLeaderInput').value = appState.leaders.FBI || '';
+            document.getElementById('ciaLeaderInput').value = appState.leaders.CIA || '';
+            document.getElementById('iaaLeaderInput').value = appState.leaders.IAA || '';
+
+            // Update New Agent Selector Options
+            const newAgentSecSelect = document.getElementById('newAgentSector');
+            if (currentUser.role !== 'AGENT_0') {
+                newAgentSecSelect.value = currentUser.sector;
+                newAgentSecSelect.disabled = true;
+            } else {
+                newAgentSecSelect.disabled = false;
+            }
+        }
+
+        function renderAll() {
+            renderLeadersSummary();
+            renderTasks(currentUser.role === 'AGENT_0' ? 'ALL' : currentUser.sector);
+            renderMembers();
+            renderTreasury();
+            renderMysteryBoxes();
+            renderReports();
+            renderChatMessages();
+        }
+
+        function renderLeadersSummary() {
+            document.getElementById('fbiLeaderDisplay').innerHTML = `المسؤول: <span class="text-white font-semibold">${appState.leaders.FBI || 'غير محدد'}</span>`;
+            document.getElementById('ciaLeaderDisplay').innerHTML = `المسؤول: <span class="text-white font-semibold">${appState.leaders.CIA || 'غير محدد'}</span>`;
+            document.getElementById('iaaLeaderDisplay').innerHTML = `المسؤول: <span class="text-white font-semibold">${appState.leaders.IAA || 'غير محدد'}</span>`;
+        }
+
+        function switchTab(tabId) {
+            currentTab = tabId;
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active', 'bg-amber-500', 'text-slate-950');
+                el.classList.add('bg-slate-800/40', 'text-gray-300');
+            });
+
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tabBtn-${tabId}`);
+            activeBtn.classList.add('active', 'bg-amber-500', 'text-slate-950');
+            activeBtn.classList.remove('bg-slate-800/40', 'text-gray-300');
+        }
+
+        // --- TASKS ---
+        function handleCreateTask(e) {
+            e.preventDefault();
+            if (currentUser.role !== 'AGENT_0') return;
+
+            const title = document.getElementById('taskTitle').value;
+            const target = document.getElementById('taskTargetSector').value;
+            const reward = parseInt(document.getElementById('taskReward').value) || 0;
+            const desc = document.getElementById('taskDesc').value;
+            const bonus = document.getElementById('taskBonus').value || 'لا يوجد';
+
+            const newTask = {
+                id: Date.now(),
+                title,
+                target,
+                reward,
+                bonus,
+                desc,
+                status: 'نشط',
+                createdBy: 'Agent 0',
+                date: new Date().toISOString().split('T')[0]
+            };
+
+            appState.tasks.unshift(newTask);
+            saveState();
+            renderTasks('ALL');
+            e.target.reset();
+        }
+
+        function filterTasks(sector) {
+            renderTasks(sector);
+        }
+
+        function renderTasks(filterSector = 'ALL') {
+            const container = document.getElementById('tasksFeedList');
+            container.innerHTML = '';
+
+            let filtered = appState.tasks;
+
+            // Strict Isolation for Sub-Sectors
+            if (currentUser.role !== 'AGENT_0') {
+                filtered = appState.tasks.filter(t => t.target === currentUser.sector || t.target === 'ALL');
+            } else if (filterSector !== 'ALL') {
+                filtered = appState.tasks.filter(t => t.target === filterSector || t.target === 'ALL');
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="col-span-2 text-center py-8 text-gray-500 text-xs">لا توجد تكاليف استخباراتية حالية.</div>';
+                return;
+            }
+
+            filtered.forEach(task => {
+                let sectorBadgeClass = 'bg-slate-800 text-gray-300';
+                let sectorName = task.target;
+                if (task.target === 'FBI') sectorBadgeClass = 'bg-blue-500/20 text-blue-400 border border-blue-500/30';
+                if (task.target === 'CIA') sectorBadgeClass = 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+                if (task.target === 'IAA') {
+                    sectorBadgeClass = 'bg-purple-500/20 text-purple-400 border border-purple-500/30';
+                    sectorName = 'IAA (العمليات السرية)';
+                }
+                if (task.target === 'ALL') sectorBadgeClass = 'bg-amber-500/20 text-amber-400 border border-amber-500/30';
+
+                const card = document.createElement('div');
+                card.className = 'glass-panel p-5 rounded-2xl border border-slate-800 relative hover:border-amber-500/30 transition';
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-2 mb-2">
+                        <span class="text-xs font-bold px-2.5 py-0.5 rounded-full ${sectorBadgeClass}">
+                            القطاع: ${sectorName}
+                        </span>
+                        <span class="text-xs font-bold bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded font-mono">
+                            المكافأة: $${formatNum(task.reward)}
+                        </span>
+                    </div>
+                    <h4 class="font-bold text-white text-base mb-1">${task.title}</h4>
+                    <p class="text-xs text-gray-300 mb-3 leading-relaxed">${task.desc}</p>
+                    
+                    <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-900 text-xs text-gray-400 flex flex-wrap items-center justify-between gap-2">
+                        <div><i class="fa-solid fa-gift text-amber-500 ml-1"></i> إضافات: <span class="text-gray-200">${task.bonus}</span></div>
+                        <div class="text-[10px] text-gray-500 font-mono">${task.date}</div>
+                    </div>
+
+                    ${currentUser.role === 'AGENT_0' ? `
+                    <div class="mt-3 text-left">
+                        <button onclick="deleteTask(${task.id})" class="text-xs text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash ml-1"></i> إلغاء المهمة</button>
+                    </div>
+                    ` : ''}
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function deleteTask(id) {
+            appState.tasks = appState.tasks.filter(t => t.id !== id);
+            saveState();
+            renderTasks(currentUser.role === 'AGENT_0' ? 'ALL' : currentUser.sector);
+        }
+
+        // --- ORG & LEADERS ---
+        function assignLeader(sector) {
+            if (currentUser.role !== 'AGENT_0') return;
+            const inputVal = document.getElementById(`${sector.toLowerCase()}LeaderInput`).value;
+            appState.leaders[sector] = inputVal;
+            saveState();
+            renderLeadersSummary();
+        }
+
+        function handleAddMember(e) {
+            e.preventDefault();
+            const name = document.getElementById('newAgentName').value;
+            const rank = document.getElementById('newAgentRank').value;
+            const sector = currentUser.role === 'AGENT_0' ? document.getElementById('newAgentSector').value : currentUser.sector;
+
+            appState.members.push({ id: Date.now(), name, rank, sector });
+            saveState();
+            renderMembers();
+            e.target.reset();
+        }
+
+        function removeMember(id) {
+            appState.members = appState.members.filter(m => m.id !== id);
+            saveState();
+            renderMembers();
+        }
+
+        function renderMembers() {
+            const fbiList = document.getElementById('fbiMemberList');
+            const ciaList = document.getElementById('ciaMemberList');
+            const iaaList = document.getElementById('iaaMemberList');
+
+            fbiList.innerHTML = ''; ciaList.innerHTML = ''; iaaList.innerHTML = '';
+
+            const fbiMembers = appState.members.filter(m => m.sector === 'FBI');
+            const ciaMembers = appState.members.filter(m => m.sector === 'CIA');
+            const iaaMembers = appState.members.filter(m => m.sector === 'IAA');
+
+            document.getElementById('fbiCount').innerText = fbiMembers.length;
+            document.getElementById('ciaCount').innerText = ciaMembers.length;
+            document.getElementById('iaaCount').innerText = iaaMembers.length;
+
+            const renderItem = (m) => `
+                <div class="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-900 text-xs">
+                    <div>
+                        <div class="font-bold text-white">${m.name}</div>
+                        <div class="text-[10px] text-gray-400">${m.rank}</div>
+                    </div>
+                    <button onclick="removeMember(${m.id})" class="text-rose-500 hover:text-rose-400 p-1"><i class="fa-solid fa-user-minus"></i></button>
+                </div>
+            `;
+
+            if (currentUser.role === 'AGENT_0' || currentUser.sector === 'FBI') fbiMembers.forEach(m => fbiList.innerHTML += renderItem(m));
+            if (currentUser.role === 'AGENT_0' || currentUser.sector === 'CIA') ciaMembers.forEach(m => ciaList.innerHTML += renderItem(m));
+            if (currentUser.role === 'AGENT_0' || currentUser.sector === 'IAA') iaaMembers.forEach(m => iaaList.innerHTML += renderItem(m));
+        }
+
+        // --- TREASURY & MYSTERY BOXES ---
+        function renderTreasury() {
+            document.getElementById('fbiBudget').innerText = `$${formatNum(appState.budgets.FBI)}`;
+            document.getElementById('ciaBudget').innerText = `$${formatNum(appState.budgets.CIA)}`;
+            document.getElementById('iaaBudget').innerText = `$${formatNum(appState.budgets.IAA)}`;
+        }
+
+        function renderMysteryBoxes() {
+            const grid = document.getElementById('mysteryBoxesGrid');
+            grid.innerHTML = '';
+
+            const activeSector = currentUser.role === 'AGENT_0' ? document.getElementById('activeFundingSector').value : currentUser.sector;
+            const unlockedList = appState.unlockedBoxes[activeSector] || [];
+            const isAgent0 = currentUser.role === 'AGENT_0';
+
+            mysteryBoxesData.forEach((box) => {
+                const isUnlocked = unlockedList.includes(box.id);
+                const canUnlock = !isUnlocked && (box.id === 1 || unlockedList.includes(box.id - 1));
+
+                const boxCard = document.createElement('div');
+                
+                if (isUnlocked) {
+                    boxCard.className = 'glass-panel p-4 rounded-2xl border border-emerald-500/40 bg-emerald-950/10 text-center flex flex-col justify-between relative overflow-hidden';
+                    boxCard.innerHTML = `
+                        <div class="text-emerald-400 text-2xl mb-2"><i class="fa-solid ${box.icon}"></i></div>
+                        <div class="text-xs font-bold text-white mb-1">${box.name}</div>
+                        <div class="text-[10px] text-gray-300 leading-tight mb-2">${box.desc}</div>
+                        <span class="text-[10px] bg-emerald-500/20 text-emerald-300 py-1 px-2 rounded-lg font-bold border border-emerald-500/30">مفتوح للقطاع</span>
+                    `;
+                } else if (canUnlock) {
+                    boxCard.className = 'glass-panel p-4 rounded-2xl border border-amber-500/60 bg-amber-950/10 text-center flex flex-col justify-between pulse-gold';
+                    boxCard.innerHTML = `
+                        <div class="text-amber-500 text-3xl mb-2 animate-bounce"><i class="fa-solid fa-circle-question"></i></div>
+                        <div class="text-xs font-bold text-amber-300 mb-1">مربع غامض #${box.id}</div>
+                        <div class="text-xs font-bold text-amber-400 mb-3 font-mono">$${formatNum(box.cost)}</div>
+                        ${!isAgent0 ? `
+                        <button onclick="unlockMysteryBox('${activeSector}', ${box.id}, ${box.cost})" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-1.5 rounded-lg text-xs transition">
+                            <i class="fa-solid fa-lock-open ml-1"></i> شراء المربع
+                        </button>
+                        ` : `
+                        <span class="text-[10px] text-amber-400/80 bg-amber-500/10 py-1 px-2 rounded border border-amber-500/20">قابل للفتح من رئيس القطاع</span>
+                        `}
+                    `;
+                } else {
+                    boxCard.className = 'glass-panel p-4 rounded-2xl border border-slate-800 opacity-50 text-center flex flex-col justify-between';
+                    boxCard.innerHTML = `
+                        <div class="text-gray-600 text-3xl mb-2"><i class="fa-solid fa-lock"></i></div>
+                        <div class="text-xs font-bold text-gray-400 mb-1">مربع غامض #${box.id}</div>
+                        <div class="text-xs font-bold text-gray-500 mb-2 font-mono">$${formatNum(box.cost)}</div>
+                        <span class="text-[10px] text-gray-500">يتطلب فتح المربع السابق</span>
+                    `;
+                }
+
+                grid.appendChild(boxCard);
+            });
+        }
+
+        function unlockMysteryBox(sector, boxId, cost) {
+            if (currentUser.role === 'AGENT_0') return; // Cannot purchase
+            
+            if (appState.budgets[sector] < cost) {
+                alert(`رصيد الميزانية غير كافٍ! تحتاج إلى $${formatNum(cost)} لفتح هذا المربع.`);
+                return;
+            }
+
+            appState.budgets[sector] -= cost;
+            if (!appState.unlockedBoxes[sector]) appState.unlockedBoxes[sector] = [];
+            appState.unlockedBoxes[sector].push(boxId);
+
+            saveState();
+            renderTreasury();
+            renderMysteryBoxes();
+        }
+
+        // --- REPORTS ---
+        function handleSubmitReport(e) {
+            e.preventDefault();
+            if (currentUser.role === 'AGENT_0') return;
+
+            const taskTitle = document.getElementById('reportTaskTitle').value;
+            const content = document.getElementById('reportContent').value;
+            const sector = currentUser.sector;
+
+            appState.reports.unshift({
+                id: Date.now(),
+                taskTitle,
+                sector,
+                content,
+                status: 'قيد المراجعة',
+                date: new Date().toISOString().split('T')[0]
+            });
+
+            saveState();
+            renderReports();
+            e.target.reset();
+        }
+
+        function updateReportStatus(id, newStatus) {
+            const rep = appState.reports.find(r => r.id === id);
+            if (rep) {
+                rep.status = newStatus;
+                saveState();
+                renderReports();
+            }
+        }
+
+        function renderReports() {
+            const container = document.getElementById('reportsList');
+            container.innerHTML = '';
+
+            let filtered = appState.reports;
+            if (currentUser.role !== 'AGENT_0') {
+                filtered = appState.reports.filter(r => r.sector === currentUser.sector);
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="text-center py-6 text-xs text-gray-500">لا توجد تقارير مرفوعة.</div>';
+                return;
+            }
+
+            filtered.forEach(rep => {
+                let statusBadge = 'bg-amber-500/20 text-amber-300';
+                if (rep.status === 'مقبول') statusBadge = 'bg-emerald-500/20 text-emerald-300';
+                if (rep.status === 'مرفوض') statusBadge = 'bg-rose-500/20 text-rose-300';
+
+                const secBadgeName = rep.sector === 'IAA' ? 'IAA (العمليات السرية)' : rep.sector;
+
+                const card = document.createElement('div');
+                card.className = 'glass-panel p-4 rounded-xl border border-slate-800 space-y-2';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-bold text-white">${rep.taskTitle} (القطاع: <span class="text-amber-400">${secBadgeName}</span>)</span>
+                        <span class="px-2 py-0.5 rounded font-bold ${statusBadge}">${rep.status}</span>
+                    </div>
+                    <p class="text-xs text-gray-300 leading-relaxed bg-slate-950 p-2.5 rounded-lg border border-slate-900">${rep.content}</p>
+                    <div class="flex items-center justify-between text-[10px] text-gray-500 pt-1">
+                        <span class="font-mono">التاريخ: ${rep.date}</span>
+                        ${currentUser.role === 'AGENT_0' && rep.status === 'قيد المراجعة' ? `
+                        <div class="flex gap-2">
+                            <button onclick="updateReportStatus(${rep.id}, 'مقبول')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1 rounded">اعتماد التقرير</button>
+                            <button onclick="updateReportStatus(${rep.id}, 'مرفوض')" class="bg-rose-600 hover:bg-rose-500 text-white font-bold px-3 py-1 rounded">رفض</button>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // --- MESSAGING SYSTEM (3 Types with strict isolation) ---
+        function handleSendMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            const msgTypeSelect = document.getElementById('chatMessageTypeSelect').value;
+
+            if (!text) return;
+
+            let msgObj = {
+                id: Date.now(),
+                senderSector: currentUser.sector,
+                senderName: currentUser.name,
+                text,
+                time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
+            };
+
+            if (msgTypeSelect === 'BROADCAST') {
+                msgObj.type = 'BROADCAST';
+            } else if (msgTypeSelect.startsWith('DIRECT_')) {
+                msgObj.type = 'DIRECT_SECTOR';
+                msgObj.targetSector = msgTypeSelect.replace('DIRECT_', '');
+            } else if (msgTypeSelect === 'FED_DIRECT') {
+                msgObj.type = 'FED_DIRECT';
+            }
+
+            appState.messages.push(msgObj);
+            saveState();
+            renderChatMessages();
+            input.value = '';
+        }
+
+        function renderChatMessages() {
+            const container = document.getElementById('chatMessagesContainer');
+            container.innerHTML = '';
+
+            // Message Visibility Filter Rule:
+            // 1. BROADCAST -> Visible to Everyone.
+            // 2. DIRECT_SECTOR -> Visible to Sender, Target Sector, and Agent 0.
+            // 3. FED_DIRECT -> Visible to Sender Sector and Agent 0.
+
+            const visibleMessages = appState.messages.filter(m => {
+                if (currentUser.role === 'AGENT_0') return true; // Agent 0 sees all
+
+                if (m.type === 'BROADCAST') return true;
+
+                if (m.type === 'DIRECT_SECTOR') {
+                    return m.senderSector === currentUser.sector || m.targetSector === currentUser.sector;
+                }
+
+                if (m.type === 'FED_DIRECT') {
+                    return m.senderSector === currentUser.sector || m.senderSector === 'FED';
+                }
+
+                return false;
+            });
+
+            if (visibleMessages.length === 0) {
+                container.innerHTML = '<div class="text-center py-8 text-xs text-gray-500">لا توجد رسائل في هذه القناة.</div>';
+                return;
+            }
+
+            visibleMessages.forEach(msg => {
+                const isMe = msg.senderName === currentUser.name;
+                const msgEl = document.createElement('div');
+                msgEl.className = `flex flex-col ${isMe ? 'items-start' : 'items-end'}`;
+
+                let typeLabel = 'عبر البث العام';
+                let borderStyle = 'border-slate-800';
+
+                if (msg.type === 'DIRECT_SECTOR') {
+                    typeLabel = `سرية إلى (${msg.targetSector})`;
+                    borderStyle = 'border-blue-500/40';
+                } else if (msg.type === 'FED_DIRECT') {
+                    typeLabel = 'برقية مباشرة مع المكتب الفدرالي';
+                    borderStyle = 'border-amber-500/40';
+                }
+
+                const senderSectorTitle = msg.senderSector === 'IAA' ? 'IAA (العمليات السرية)' : msg.senderSector;
+
+                msgEl.innerHTML = `
+                    <div class="max-w-[85%] rounded-2xl px-4 py-2.5 text-xs space-y-1 ${
+                        isMe 
+                        ? 'bg-amber-500 text-slate-950 font-medium rounded-tr-none' 
+                        : 'bg-slate-900 border ' + borderStyle + ' text-gray-100 rounded-tl-none'
+                    }">
+                        <div class="text-[10px] font-bold opacity-80 flex items-center justify-between gap-4 border-b border-black/10 pb-1">
+                            <span>${msg.senderName} (${senderSectorTitle})</span>
+                            <span class="font-mono text-[9px]">${msg.time} • ${typeLabel}</span>
+                        </div>
+                        <div class="pt-1">${msg.text}</div>
+                    </div>
+                `;
+                container.appendChild(msgEl);
+            });
+
+            container.scrollTop = container.scrollHeight;
+        }
+
+        window.onload = function() {
+            loadSavedState();
+        };
+    </script>
+</body>
+</html>
